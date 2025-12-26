@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 
 import authRoutes from './routes/auth.route';
 import bookRoutes from './routes/book.route';
+import adminRoutes from './routes/admin.route';
 
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
+app.use('api/admin', adminRoutes);
 
 async function start(){
     await connectDatabase();
