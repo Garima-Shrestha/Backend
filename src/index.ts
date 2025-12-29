@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
-app.use('api/admin', adminRoutes);
+app.use('/api/admin/users', adminRoutes);
 
 async function start(){
     await connectDatabase();
