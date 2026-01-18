@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { PORT } from './config';
 import { connectDatabase } from './database/mongodb';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 import authRoutes from './routes/auth.route';
 import bookRoutes from './routes/book.route';
@@ -15,6 +16,14 @@ console.log(process.env.PORT); // [yo port is from .env file]
 
 const app: Application = express();
 // const PORT: number = 3000;
+
+let corsOptions = {
+    origin: ["http://localhost:3000", "http://localhost:3003"],
+    // which url can access backend
+    // put your frontend domain/url here
+}
+// origin: "+", // yo le sabai url lai access dinxa
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 
