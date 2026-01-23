@@ -26,12 +26,13 @@ export type CreateUserDto = z.infer<typeof CreateUserDto>
 
 
 
-export const UpdateUserDto = CreateUserDto.partial();
-export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
-
 export const LoginUserDto = z.object({
     username: z.string().min(3),
     password: z.string().min(6),
 });
 
 export type LoginUserDto = z.infer<typeof LoginUserDto>;
+
+
+export const UpdateUserDto = UserSchema.partial();
+export type UpdateUserDto = z.infer<typeof UpdateUserDto>;

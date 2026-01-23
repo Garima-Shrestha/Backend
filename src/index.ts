@@ -9,6 +9,8 @@ import authRoutes from './routes/auth.route';
 import bookRoutes from './routes/book.route';
 import adminRoutes from './routes/admin.route';
 
+import path from 'path';
+
 
 dotenv.config();
 // Yo bhanda tala .env chalauna milxa
@@ -24,6 +26,9 @@ let corsOptions = {
 }
 // origin: "+", // yo le sabai url lai access dinxa
 app.use(cors(corsOptions));
+
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'))); // static file serving
 
 app.use(bodyParser.json());
 

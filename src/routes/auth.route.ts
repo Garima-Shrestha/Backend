@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "../controller/auth.controller";
 import { authorizedMiddleware } from "../middlewares/authorization.middleware";
+import { uploads } from "../middlewares/upload_middleware";
 
 let authController = new AuthController();
 const router = Router();
@@ -9,4 +10,11 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 
 router.get("/whoami", authorizedMiddleware, authController.getProfile);
+
+router.put(
+    "/update-profile",
+    authorizedMiddleware,
+    uploads.single("image"), // "image" - field name from frontend/class
+    authController.updateProfile
+)
 export default router;
