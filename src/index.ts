@@ -11,6 +11,8 @@ import adminRoutes from './routes/admin.route';
 
 import path from 'path';
 
+import blogRouter from './routes/blog.route';
+
 
 dotenv.config();
 // Yo bhanda tala .env chalauna milxa
@@ -35,6 +37,7 @@ app.use(bodyParser.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/admin/users', adminRoutes);
+app.use('/api/blogs', blogRouter);
 
 async function start(){
     await connectDatabase();
