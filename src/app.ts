@@ -39,6 +39,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/admin/users', adminRoutes);
 app.use('/api/blogs', blogRouter);
-app.use('/api/admin/users', adminUserRoute);
+app.use('/api/admin/users', adminBlogRouter);
 
 export default app;
