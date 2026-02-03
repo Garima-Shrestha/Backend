@@ -2,26 +2,24 @@ import { CreateUserDto, LoginUserDto, UpdateUserDto } from "../dtos/user.dto";
 import { UserRepository } from "../repositories/user.repository";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../errors/http-error";
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from "../config";
-import { email } from "zod";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config/index";
+import { sendEmail } from "../config/email";
 
-
-let userRepository = new UserRepository;
+const CLIENT_URL = process.env.CLIENT_URL as string;
+let userRepository = new UserRepository();
 
 export class UserService {
     async registerUser(data: CreateUserDto) {
         // Business logic, check duplicate username/email, hash
         const checkEmail = await userRepository.getUserByEmail(data.email);
-        if(checkEmail){
-            throw new HttpError(409, "Email already in use");
+        if (checkEmail) {
+            throw new HttpError(403, "Email already in use");
         }
         const checkUsername = await userRepository.getUserByUsername(data.username);
-
-        if (checkUsername){
-            throw new HttpError(403,"Username already in use");
+        if (checkUsername) {
+            throw new HttpError(403, "Username already in use");
         }
-
         // hash/encrypt password, to not store plain text password - security risk
         const hashedPassword = await bcryptjs.hash(data.password, 10); // 10 - complexity
         data.password = hashedPassword; // update the password with hashed one
@@ -29,25 +27,24 @@ export class UserService {
 
         return newUser;
     }
-
-     async loginUser(data: LoginUserDto){
+    async loginUser(data: LoginUserDto) {
         const existingUser = await userRepository.getUserByUsername(data.username);
-        if(!existingUser){
-            throw new HttpError(404,"User not found");
+        if (!existingUser) {
+            throw new HttpError(404, "User not found");
         }
-        const isPasswordValid = await bcryptjs.compare(data.password, existingUser.password); // compare plain text with hashed
-        if (!isPasswordValid){
-            throw new HttpError(401,"Invalid credentials");
+        const isPasswordValid = await bcryptjs.compare(data.password, existingUser.password);// compare plain text with hashed
+        if (!isPasswordValid) {
+            throw new HttpError(401, "Invalid credentials");
         }
         // generate JWT
-        const payload = {
+        const payload = { 
             id: existingUser._id,
             username: existingUser.username,
             email: existingUser.email,
             role: existingUser.role
         }; // what to include in token
-        const token = jwt.sign(payload, JWT_SECRET, {expiresIn: '30d'}); //30 days expiry
-        return{token,existingUser};
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' }); // 30 days expiry
+        return { token, existingUser }
     }
 
     async getUserById(userId: string) {
@@ -81,5 +78,21 @@ export class UserService {
         }
         const updatedUser = await userRepository.updateOneUser(userId, data);
         return updatedUser;
+    }
+
+    async sendResetPasswordEmail(email?: string) {
+        if (!email) {
+            throw new HttpError(400, "Email is required");
+        }
+        const user = await userRepository.getUserByEmail(email);
+        if (!user) {
+            throw new HttpError(404, "User not found");
+        }
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // 1 hour expiry
+        const resetLink = `${CLIENT_URL}/reset-password?token=${token}`;
+        const html = `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 1 hour.</p>`;
+        await sendEmail(user.email, "Password Reset", html);
+        return user;
+
     }
 }

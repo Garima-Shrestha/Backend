@@ -120,4 +120,20 @@ export class AuthController {
             );
         }
     }
+
+    async sendResetPasswordEmail(req: Request, res: Response) {
+        try {
+            const email = req.body.email;
+            const user = await userService.sendResetPasswordEmail(email);
+            return res.status(200).json(
+                { success: true,
+                    data: user,
+                    message: "If the email is registered, a reset link has been sent." }
+            );
+        } catch (error: Error | any) {
+            return res.status(error.statusCode ?? 500).json(
+                { success: false, message: error.message || "Internal Server Error" }
+            );
+        }
+    }
 }
