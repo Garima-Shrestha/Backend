@@ -14,4 +14,8 @@ export class AdminBlogService {
         return { blogs, pagination };
 
     }
+
+   async deleteOneBlog(id: string) {
+        return await blogRepository.delete(id);
+    }
 }

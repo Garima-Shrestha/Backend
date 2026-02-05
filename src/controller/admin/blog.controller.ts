@@ -28,4 +28,19 @@ export class AdminBlogController {
             });
         }
     }
+    async deleteOneBlog(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            await adminBlogService.deleteOneBlog(id);
+            return res.status(200).json({
+                success: true,
+                message: "Blog deleted successfully"
+            });
+        } catch (error: Error | any) {
+            return res.status(error.statusCode || 500).json({
+                success: false,
+                message: "Internal Server Error"
+            });
+        }
+    }
 }
